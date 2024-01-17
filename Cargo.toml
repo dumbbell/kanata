@@ -48,7 +48,7 @@ kanata-parser =   { path = "parser" }
 [target.'cfg(target_os = "macos")'.dependencies]
 karabiner-driverkit = "0.1.2"
 
-[target.'cfg(target_os = "linux")'.dependencies]
+[target.'cfg(any(target_os = "linux", target_os = "freebsd"))'.dependencies]
 evdev = "=0.12.0"
 signal-hook = "0.3.14"
 inotify = { version = "0.10.0", default_features = false }

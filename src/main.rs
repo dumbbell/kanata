@@ -22,7 +22,7 @@ pub struct ValidatedArgs {
     paths: Vec<CfgPath>,
     #[cfg(feature = "tcp_server")]
     port: Option<i32>,
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     symlink_path: Option<String>,
     nodelay: bool,
 }
@@ -90,7 +90,7 @@ kanata.kbd in the current working directory and
 
     /// Path for the symlink pointing to the newly-created device. If blank, no
     /// symlink will be created.
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     #[arg(short, long, verbatim_doc_comment)]
     symlink_path: Option<String>,
 
@@ -117,7 +117,7 @@ kanata.kbd in the current working directory and
     ///
     /// You may wish to increase this if you have a device that is failing
     /// to register - the device may be taking too long to become ready.
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     #[arg(short, long, verbatim_doc_comment)]
     wait_device_ms: Option<u64>,
 
@@ -185,7 +185,7 @@ fn cli_init() -> Result<ValidatedArgs> {
         std::process::exit(status);
     }
 
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     if let Some(wait) = args.wait_device_ms {
         use std::sync::atomic::Ordering;
         log::info!("Setting device registration wait time to {wait} ms.");
@@ -196,7 +196,7 @@ fn cli_init() -> Result<ValidatedArgs> {
         paths: cfg_paths,
         #[cfg(feature = "tcp_server")]
         port: args.port,
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "freebsd"))]
         symlink_path: args.symlink_path,
         nodelay: args.nodelay,
     })
@@ -243,7 +243,7 @@ fn main_impl() -> Result<()> {
         Kanata::start_notification_loop(nrx, server.connections);
     }
 
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     sd_notify::notify(true, &[sd_notify::NotifyState::Ready])?;
 
     Kanata::event_loop(kanata_arc, tx)?;

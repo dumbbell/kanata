@@ -5,7 +5,7 @@ use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 use rustc_hash::FxHashMap as HashMap;
 
-#[cfg(any(target_os = "linux", target_os = "unknown"))]
+#[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
 mod linux;
 #[cfg(any(target_os = "macos", target_os = "unknown"))]
 mod macos;
@@ -36,7 +36,7 @@ impl OsCode {
             Platform::Macos => self.as_u16_macos(),
         };
 
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "freebsd"))]
         return self.as_u16_linux();
 
         #[cfg(target_os = "windows")]
@@ -54,7 +54,7 @@ impl OsCode {
             Platform::Macos => OsCode::from_u16_macos(code),
         };
 
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "freebsd"))]
         return OsCode::from_u16_linux(code);
 
         #[cfg(target_os = "windows")]
@@ -272,17 +272,17 @@ pub fn str_to_oscode(s: &str) -> Option<OsCode> {
         "fn" => OsCode::KEY_FN,
         #[cfg(target_os = "windows")]
         "kana" | "katakana" | "katakanahiragana" => OsCode::KEY_HANGEUL,
-        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
         "kana" | "katakanahiragana" => OsCode::KEY_KATAKANAHIRAGANA,
-        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
         "hiragana" => OsCode::KEY_HIRAGANA,
-        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
         "katakana" => OsCode::KEY_KATAKANA,
         "cnv" | "conv" | "henk" | "hnk" | "henkan" => OsCode::KEY_HENKAN,
         "ncnv" | "mhnk" | "muhenkan" => OsCode::KEY_MUHENKAN,
         "ro" => OsCode::KEY_RO,
 
-        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
         "prtsc" | "prnt" => OsCode::KEY_SYSRQ,
         #[cfg(target_os = "windows")]
         "prtsc" | "prnt" => OsCode::KEY_PRINT,
@@ -294,13 +294,13 @@ pub fn str_to_oscode(s: &str) -> Option<OsCode> {
         "mbck" | "mousebackward" => OsCode::BTN_SIDE,
 
         // NOTE: these are linux and interception-only due to missing implementation for LLHOOK
-        #[cfg(any(target_os = "linux", target_os = "unknown", feature = "interception_driver"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown", feature = "interception_driver"))]
         "mwu" | "mousewheelup" => OsCode::MouseWheelUp,
-        #[cfg(any(target_os = "linux", target_os = "unknown", feature = "interception_driver"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown", feature = "interception_driver"))]
         "mwd" | "mousewheeldown" => OsCode::MouseWheelDown,
-        #[cfg(any(target_os = "linux", target_os = "unknown", feature = "interception_driver"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown", feature = "interception_driver"))]
         "mwl" | "mousewheelleft" => OsCode::MouseWheelLeft,
-        #[cfg(any(target_os = "linux", target_os = "unknown", feature = "interception_driver"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown", feature = "interception_driver"))]
         "mwr" | "mousewheelright" => OsCode::MouseWheelRight,
 
         "hmpg" | "homepage" => OsCode::KEY_HOMEPAGE,
@@ -310,11 +310,11 @@ pub fn str_to_oscode(s: &str) -> Option<OsCode> {
         "calc" => OsCode::KEY_CALC,
 
         // NOTE: these are linux-only right now due to missing the mappings in windows.rs
-        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
         "plyr" | "player" => OsCode::KEY_PLAYER,
-        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
         "powr" | "power" => OsCode::KEY_POWER,
-        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
         "zzz" | "sleep" => OsCode::KEY_SLEEP,
 
         _ => {

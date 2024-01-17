@@ -1,8 +1,8 @@
 //! Platform specific code for low level keyboard read/write.
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "freebsd"))]
 mod linux;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "freebsd"))]
 pub use linux::*;
 
 #[cfg(target_os = "windows")]

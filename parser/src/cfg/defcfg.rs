@@ -20,19 +20,19 @@ pub struct CfgOptions {
     pub dynamic_macro_max_presses: u16,
     pub dynamic_macro_replay_delay_behaviour: ReplayDelayBehaviour,
     pub concurrent_tap_hold: bool,
-    #[cfg(any(target_os = "linux", target_os = "unknown"))]
+    #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
     pub linux_dev: Vec<String>,
-    #[cfg(any(target_os = "linux", target_os = "unknown"))]
+    #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
     pub linux_dev_names_include: Option<Vec<String>>,
-    #[cfg(any(target_os = "linux", target_os = "unknown"))]
+    #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
     pub linux_dev_names_exclude: Option<Vec<String>>,
-    #[cfg(any(target_os = "linux", target_os = "unknown"))]
+    #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
     pub linux_continue_if_no_devs_found: bool,
-    #[cfg(any(target_os = "linux", target_os = "unknown"))]
+    #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
     pub linux_unicode_u_code: crate::keys::OsCode,
-    #[cfg(any(target_os = "linux", target_os = "unknown"))]
+    #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
     pub linux_unicode_termination: UnicodeTermination,
-    #[cfg(any(target_os = "linux", target_os = "unknown"))]
+    #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
     pub linux_x11_repeat_delay_rate: Option<KeyRepeatSettings>,
     #[cfg(any(target_os = "windows", target_os = "unknown"))]
     pub windows_altgr: AltGrBehaviour,
@@ -60,21 +60,21 @@ impl Default for CfgOptions {
             dynamic_macro_max_presses: 128,
             dynamic_macro_replay_delay_behaviour: ReplayDelayBehaviour::Recorded,
             concurrent_tap_hold: false,
-            #[cfg(any(target_os = "linux", target_os = "unknown"))]
+            #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
             linux_dev: vec![],
-            #[cfg(any(target_os = "linux", target_os = "unknown"))]
+            #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
             linux_dev_names_include: None,
-            #[cfg(any(target_os = "linux", target_os = "unknown"))]
+            #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
             linux_dev_names_exclude: None,
-            #[cfg(any(target_os = "linux", target_os = "unknown"))]
+            #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
             linux_continue_if_no_devs_found: false,
-            #[cfg(any(target_os = "linux", target_os = "unknown"))]
+            #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
             // historically was the only option, so make KEY_U the default
             linux_unicode_u_code: crate::keys::OsCode::KEY_U,
-            #[cfg(any(target_os = "linux", target_os = "unknown"))]
+            #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
             // historically was the only option, so make Enter the default
             linux_unicode_termination: UnicodeTermination::Enter,
-            #[cfg(any(target_os = "linux", target_os = "unknown"))]
+            #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
             linux_x11_repeat_delay_rate: None,
             #[cfg(any(target_os = "windows", target_os = "unknown"))]
             windows_altgr: AltGrBehaviour::default(),
@@ -138,7 +138,7 @@ pub fn parse_defcfg(expr: &[SExpr]) -> Result<CfgOptions> {
                             })??;
                     }
                     "linux-dev" => {
-                        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+                        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
                         {
                             cfg.linux_dev = parse_dev(val)?;
                             if cfg.linux_dev.is_empty() {
@@ -150,7 +150,7 @@ pub fn parse_defcfg(expr: &[SExpr]) -> Result<CfgOptions> {
                         }
                     }
                     "linux-dev-names-include" => {
-                        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+                        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
                         {
                             let dev_names = parse_dev(val)?;
                             if dev_names.is_empty() {
@@ -160,13 +160,13 @@ pub fn parse_defcfg(expr: &[SExpr]) -> Result<CfgOptions> {
                         }
                     }
                     "linux-dev-names-exclude" => {
-                        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+                        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
                         {
                             cfg.linux_dev_names_exclude = Some(parse_dev(val)?);
                         }
                     }
                     "linux-unicode-u-code" => {
-                        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+                        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
                         {
                             let v = sexpr_to_str_or_err(val, label)?;
                             cfg.linux_unicode_u_code =
@@ -176,7 +176,7 @@ pub fn parse_defcfg(expr: &[SExpr]) -> Result<CfgOptions> {
                         }
                     }
                     "linux-unicode-termination" => {
-                        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+                        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
                         {
                             let v = sexpr_to_str_or_err(val, label)?;
                             cfg.linux_unicode_termination = match v {
@@ -193,7 +193,7 @@ pub fn parse_defcfg(expr: &[SExpr]) -> Result<CfgOptions> {
                         }
                     }
                     "linux-x11-repeat-delay-rate" => {
-                        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+                        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
                         {
                             let v = sexpr_to_str_or_err(val, label)?;
                             let delay_rate = v.split(',').collect::<Vec<_>>();
@@ -289,7 +289,7 @@ pub fn parse_defcfg(expr: &[SExpr]) -> Result<CfgOptions> {
                         }
                     }
                     "linux-continue-if-no-devs-found" => {
-                        #[cfg(any(target_os = "linux", target_os = "unknown"))]
+                        #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
                         {
                             cfg.linux_continue_if_no_devs_found = parse_defcfg_val_bool(val, label)?
                         }
@@ -384,7 +384,7 @@ pub fn parse_colon_separated_text(paths: &str) -> Vec<String> {
     all_paths
 }
 
-#[cfg(any(target_os = "linux", target_os = "macos", target_os = "unknown"))]
+#[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "macos", target_os = "unknown"))]
 pub fn parse_dev(val: &SExpr) -> Result<Vec<String>> {
     Ok(match val {
         SExpr::Atom(a) => {
@@ -426,14 +426,14 @@ fn sexpr_to_str_or_err<'a>(expr: &'a SExpr, label: &str) -> Result<&'a str> {
     }
 }
 
-#[cfg(any(target_os = "linux", target_os = "unknown"))]
+#[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct KeyRepeatSettings {
     pub delay: u16,
     pub rate: u16,
 }
 
-#[cfg(any(target_os = "linux", target_os = "unknown"))]
+#[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "unknown"))]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum UnicodeTermination {
     Enter,

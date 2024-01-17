@@ -34,7 +34,7 @@ mod windows;
 #[cfg(target_os = "windows")]
 pub use windows::*;
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "freebsd"))]
 mod linux;
 
 #[cfg(target_os = "macos")]
@@ -109,17 +109,17 @@ pub struct Kanata {
     time_remainder: u128,
     /// Is true if a live reload was requested by the user and false otherwise.
     live_reload_requested: bool,
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     /// Linux input paths in the user configuration.
     pub kbd_in_paths: Vec<String>,
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     /// Tracks the Linux user configuration to continue or abort if no devices are found.
     continue_if_no_devices: bool,
-    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    #[cfg(any(target_os = "linux", target_os = "freebsd", target_os = "macos"))]
     /// Tracks the Linux/Macos user configuration for device names (instead of paths) that should be
     /// included for interception and processing by kanata.
     pub include_names: Option<Vec<String>>,
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     /// Tracks the Linux user configuration for device names (instead of paths) that should be
     /// excluded for interception and processing by kanata.
     pub exclude_names: Option<Vec<String>>,
@@ -132,7 +132,7 @@ pub struct Kanata {
     /// Tracks the caps-word state. Is Some(...) if caps-word is active and None otherwise.
     pub caps_word: Option<CapsWordState>,
     /// Config items from `defcfg`.
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     pub x11_repeat_rate: Option<KeyRepeatSettings>,
     /// Fake key actions that are waiting for a certain duration of keyboard idling.
     pub waiting_for_idle: HashSet<FakeKeyOnIdle>,
@@ -230,7 +230,7 @@ impl Kanata {
         };
 
         let kbd_out = match KbdOut::new(
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "freebsd"))]
             &args.symlink_path,
         ) {
             Ok(kbd_out) => kbd_out,
@@ -289,13 +289,13 @@ impl Kanata {
             override_states: OverrideStates::new(),
             #[cfg(target_os = "macos")]
             include_names: cfg.items.macos_dev_names_include,
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "freebsd"))]
             kbd_in_paths: cfg.items.linux_dev,
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "freebsd"))]
             continue_if_no_devices: cfg.items.linux_continue_if_no_devs_found,
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "freebsd"))]
             include_names: cfg.items.linux_dev_names_include,
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "freebsd"))]
             exclude_names: cfg.items.linux_dev_names_exclude,
             #[cfg(all(feature = "interception_driver", target_os = "windows"))]
             intercept_mouse_hwid: cfg.items.windows_interception_mouse_hwid,
@@ -310,7 +310,7 @@ impl Kanata {
             dynamic_macro_replay_behaviour: ReplayBehaviour {
                 delay: cfg.items.dynamic_macro_replay_delay_behaviour,
             },
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "freebsd"))]
             x11_repeat_rate: cfg.items.linux_x11_repeat_delay_rate,
             waiting_for_idle: HashSet::default(),
             ticks_since_idle: 0,
@@ -352,7 +352,7 @@ impl Kanata {
         };
 
         *MAPPED_KEYS.lock() = cfg.mapped_keys;
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "freebsd"))]
         Kanata::set_repeat_rate(cfg.items.linux_x11_repeat_delay_rate)?;
         log::info!("Live reload successful");
         Ok(())
@@ -1767,12 +1767,12 @@ fn check_for_exit(event: &KeyEvent) {
     }
     const EXIT_MSG: &str = "pressed LControl+Space+Escape, exiting";
     if IS_ESC_PRESSED.load(SeqCst) && IS_SPC_PRESSED.load(SeqCst) && IS_LCL_PRESSED.load(SeqCst) {
-        #[cfg(not(target_os = "linux"))]
+        #[cfg(not(any(target_os = "linux", target_os = "freebsd")))]
         {
             log::info!("{EXIT_MSG}");
             panic!("{EXIT_MSG}");
         }
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "freebsd"))]
         {
             log::info!("{EXIT_MSG}");
             signal_hook::low_level::raise(signal_hook::consts::SIGTERM).expect("raise signal");
@@ -1781,7 +1781,7 @@ fn check_for_exit(event: &KeyEvent) {
 }
 
 fn update_kbd_out(_cfg: &CfgOptions, _kbd_out: &KbdOut) -> Result<()> {
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     {
         _kbd_out.update_unicode_termination(_cfg.linux_unicode_termination);
         _kbd_out.update_unicode_u_code(_cfg.linux_unicode_u_code);
